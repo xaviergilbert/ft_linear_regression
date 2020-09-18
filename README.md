@@ -3,6 +3,7 @@
 
 ## USAGE
 ./python model.py [-graph]
+
 ./python predict.py
 
 ## Options
