@@ -4,7 +4,6 @@ def main():
     line = f.readlines()
     b, a = line[0].rstrip(), line[1].rstrip()
     while True:
-
         user_input = input("What is the mileage of your car ?\n")
         if user_input.isnumeric():
             break
