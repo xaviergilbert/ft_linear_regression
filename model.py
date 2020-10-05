@@ -1,8 +1,7 @@
+import sys
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from sklearn.linear_model import LinearRegression
-import sys
 
 class model_fit:
     def __init__(self, X, Y, cycle = 1000000, learning_rate = 0.1):
@@ -27,24 +26,24 @@ class model_fit:
         predict = self.theta[1] * X + self.theta[0]
         return predict
 
-    def ajust_learning_rate(self, mse_history, Y_pred):
-        if mse_history[-1] >= mse_history[-2]:
+    def ajust_learning_rate(self, Y_pred):
+        if self.mse_history[-1] >= self.mse_history[-2]:
             self.theta[0] += self.learning_rate * np.mean(Y_pred - self.Y)
             self.theta[1] += self.learning_rate * np.mean((Y_pred - self.Y) * self.X)
             self.learning_rate *= 0.1
-            del mse_history[-1]
+            del self.mse_history[-1]
         else:
             self.learning_rate *= 1.50
 
     def fit(self):
         print("Modeling...")
-        mse_history = []
+        self.mse_history = []
         for cycle in range(self.cycle):
             Y_pred = self.predict(self.X)
             self.theta[0] -= self.learning_rate * np.mean(Y_pred - self.Y)
             self.theta[1] -= self.learning_rate * np.mean((Y_pred - self.Y) * self.X)
-            mse_history.append(self.mse_(self.Y, self.predict(self.X)))
-            self.ajust_learning_rate(mse_history, Y_pred) if cycle > 0 else None
+            self.mse_history.append(self.mse_(self.Y, self.predict(self.X)))
+            self.ajust_learning_rate(Y_pred) if cycle > 0 else None
             if self.learning_rate == 0:
                 break
         self.theta[1] = self.theta[1] * self.max_y / self.max_x
@@ -69,20 +68,5 @@ def main():
         plt.tight_layout()
         plt.savefig("figure.png")
 
-def sklearn():
-    data = pd.read_csv('data.csv')
-    X = np.array(data[['km']])
-    Y = np.array(data[['price']])
-    reg = LinearRegression().fit(X, Y)
-    b = reg.intercept_
-    a = reg.coef_
-    print("coef :", a)
-    print("score", reg.score(X, Y))
-    print("intercept : ", b)
-    user_input = float(input("What is the mileage of your car ?\n"))
-    print("Your car is probably worth", int(user_input * a + b), "euros")
-
-
 if __name__ == "__main__":
     main()
-    # sklearn()
